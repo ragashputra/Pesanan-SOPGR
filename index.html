@@ -182,8 +182,9 @@ body{overscroll-behavior:none}
 .stat b{font-size:36px;line-height:1}
 .panel .search{margin-bottom:14px}
 .panel .search input{height:60px;font-size:16px;line-height:20px;border-radius:18px;border:2px solid var(--bd)}
-.list{gap:12px}
-.oc{padding:18px 20px;border-radius:20px;border:2px solid var(--bd);content-visibility:auto;contain-intrinsic-size:auto 130px}
+.list{gap:12px;grid-auto-rows:max-content;-webkit-overflow-scrolling:touch}
+#p-list{grid-template-columns:minmax(0,1fr)}
+.oc{padding:18px 20px;border-radius:20px;border:2px solid var(--bd);min-width:0;height:auto;overflow:visible}
 .oc b{font-size:19px}
 .oc time{font-size:13.5px}
 .oc .m{display:flex;flex-direction:column;gap:1px;margin-top:10px;font-size:16.5px;line-height:1.35}
