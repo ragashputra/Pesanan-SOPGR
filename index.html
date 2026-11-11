@@ -181,7 +181,7 @@ body{overscroll-behavior:none}
 .stat span{font-size:16px;font-weight:700;color:var(--ink)}
 .stat b{font-size:36px;line-height:1}
 .panel .search{margin-bottom:14px}
-.panel .search input{height:60px;font-size:17px;border-radius:18px;border:2px solid var(--bd)}
+.panel .search input{height:60px;font-size:16px;line-height:20px;border-radius:18px;border:2px solid var(--bd)}
 .list{gap:12px}
 .oc{padding:18px 20px;border-radius:20px;border:2px solid var(--bd);content-visibility:auto;contain-intrinsic-size:auto 130px}
 .oc b{font-size:19px}
@@ -193,6 +193,9 @@ body{overscroll-behavior:none}
 .oc .n{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:14px}
 .tag{font-size:12px;padding:3px 10px}
 .pfoot{font-size:13px}
+#nama{text-transform:uppercase}
+.hint{margin:8px 2px 0;font-size:13px;font-weight:600;color:var(--mut);transition:color .25s}
+.hint.warn{color:#e5484d}
 @media(max-width:600px){.bg i{filter:blur(48px)}}
 @media(max-width:380px){.stat b{font-size:30px}.oc{padding:16px}.oc b{font-size:18px}}
 </style>
@@ -212,7 +215,7 @@ body{overscroll-behavior:none}
   <section class="step" data-s="0">
     <h1>Mau makan apa hari ini?</h1>
     <p class="sub">Isi namamu, lalu pilih makanan dan minuman. Cuma satu menit.</p>
-    <div class="field"><label for="nama">Nama kamu</label><input id="nama" maxlength="40" placeholder="Contoh: Ragash" autocomplete="given-name" enterkeyhint="next"></div>
+    <div class="field"><label for="nama">Nama kamu</label><input id="nama" maxlength="40" placeholder="Contoh: RAGASH" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="next" aria-describedby="nama-hint"><div class="hint" id="nama-hint">Hanya huruf, otomatis huruf besar.</div></div>
     <button class="listbtn" id="open-list" type="button"><span class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg></span><span class="tx">Lihat daftar pesanan</span><span class="ch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></span></button>
   </section>
 
@@ -320,13 +323,20 @@ const price = {};
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 
-try { S.nama = localStorage.getItem("nama") || ""; $("#nama").value = S.nama; } catch (e) {}
+/* Nama: hanya huruf (dan spasi antar kata), selalu huruf besar */
+function cleanName(v) {
+  return String(v == null ? "" : v).normalize("NFC")
+    .replace(/[\s\u00a0]+/g, " ").replace(/[^\p{L} ]/gu, "").replace(/ {2,}/g, " ").replace(/^ /, "")
+    .toLocaleUpperCase("id-ID").slice(0, 40);
+}
+const NAME_OK = /^\p{L}+(?: \p{L}+)*$/u;
+try { S.nama = cleanName(localStorage.getItem("nama") || ""); $("#nama").value = S.nama; } catch (e) {}
 
 let tt;
 function toast(t) { const e = $("#toast"); e.textContent = t; e.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => e.classList.remove("on"), 2800); }
 
 function valid() {
-  return S.i === 0 ? S.nama.trim().length >= 2 : S.i === 1 ? !!S.food : S.i === 2 ? !!S.drink : S.i === 3;
+  return S.i === 0 ? (S.nama.trim().length >= 2 && NAME_OK.test(S.nama.trim())) : S.i === 1 ? !!S.food : S.i === 2 ? !!S.drink : S.i === 3;
 }
 function sync() {
   const n = $("#next"), last = S.i === 3;
@@ -408,7 +418,27 @@ function list(kind) {
   clr.addEventListener("click", () => { qi.value = ""; clr.hidden = true; clearTimeout(t); view[kind].q = ""; list(kind); qi.focus(); });
 });
 
-$("#nama").addEventListener("input", e => { S.nama = e.target.value; sync(); });
+{
+  const nm = $("#nama"), hint = $("#nama-hint"); let comp = false, ht = 0;
+  const warn = () => { hint.classList.add("warn"); clearTimeout(ht); ht = setTimeout(() => hint.classList.remove("warn"), 1600); };
+  const apply = () => {
+    const raw = nm.value, c = cleanName(raw);
+    if (raw !== c) {
+      let pos = null; try { pos = nm.selectionStart; } catch (e) {}
+      if (/[^\p{L}\s]/u.test(raw)) warn();
+      nm.value = c;
+      if (pos != null) { const p = Math.min(cleanName(raw.slice(0, pos)).length, c.length); try { nm.setSelectionRange(p, p); } catch (e) {} }
+    }
+    S.nama = c; sync();
+  };
+  nm.addEventListener("beforeinput", e => {
+    if (!comp && e.inputType === "insertText" && e.data && /[^\p{L} ]/u.test(e.data)) { e.preventDefault(); warn(); }
+  });
+  nm.addEventListener("compositionstart", () => { comp = true; });
+  nm.addEventListener("compositionend", () => { comp = false; apply(); });
+  nm.addEventListener("input", () => { if (comp) { S.nama = cleanName(nm.value); sync(); } else apply(); });
+  nm.addEventListener("change", apply);
+}
 $("#nama").addEventListener("keydown", e => { if (e.key === "Enter" && valid()) { e.preventDefault(); e.target.blur(); go(1); } });
 $("#cat").addEventListener("input", e => { S.note = e.target.value; });
 $("#cat").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); e.target.blur(); next(); } });
