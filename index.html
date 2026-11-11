@@ -153,12 +153,48 @@ h1{font-size:clamp(32px,9vw,42px)}h2{font-size:clamp(26px,7vw,32px)}
 :root{--spring:cubic-bezier(.34,1.56,.64,1)}
 button{--press:.95;touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .btn{--press:.965}.item{--press:.972}.chip,.iconbtn,.clr,.back{--press:.9}.edit{--press:.92}.linkbtn{--press:.95}
-.btn,.chip,.item,.linkbtn,.iconbtn,.clr,.edit{transition:transform .45s var(--spring),box-shadow .35s var(--ease),filter .3s var(--ease),background .3s,border-color .3s,color .25s,opacity .3s}
+.btn,.chip,.item,.linkbtn,.iconbtn,.clr,.edit,.listbtn{transition:transform .45s var(--spring),box-shadow .35s var(--ease),filter .3s var(--ease),background .3s,border-color .3s,color .25s,opacity .3s}
 .is-down,button:not(:disabled):active{transform:scale(var(--press));filter:brightness(.94);transition:transform .11s cubic-bezier(.2,.7,.3,1),box-shadow .11s,filter .11s,background .3s,border-color .3s,color .25s,opacity .3s}
 .next.is-down,.wa.is-down,.next:not(:disabled):active,.wa:not(:disabled):active{box-shadow:0 5px 12px -8px var(--a1),inset 0 3px 8px rgba(11,16,32,.22)}
 .back.is-down,.ghost.is-down,.iconbtn.is-down,.chip.is-down,.item.is-down,.edit.is-down{box-shadow:inset 0 2px 8px rgba(18,24,53,.18)}
 button:disabled{cursor:not-allowed}
 .btn.back:disabled,.edit:disabled{opacity:.45}
+
+/* ===== Pembaruan: tombol daftar, panel lebih besar, performa ===== */
+:root{--bd:rgba(138,151,255,.65)}
+@media(prefers-color-scheme:light){:root{--bd:rgba(74,91,255,.55)}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overscroll-behavior:none}
+.listbtn{--press:.97;display:flex;align-items:center;gap:14px;width:100%;min-height:64px;margin-top:20px;padding:12px 16px;border-radius:20px;border:2px solid var(--bd);background:var(--glass2);color:var(--ink);font:700 17px "Inter",system-ui,sans-serif;text-align:left;cursor:pointer;box-shadow:0 12px 28px -16px var(--a1);transition:transform .45s var(--spring),box-shadow .35s var(--ease),filter .3s var(--ease),border-color .3s}
+.listbtn .li{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;color:#0b1020;background:linear-gradient(120deg,var(--a1),var(--a2))}
+.listbtn .tx{flex:1;min-width:0}
+.listbtn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.listbtn .ch{flex:none;display:grid;place-items:center;color:var(--mut)}
+.listbtn.is-down,.listbtn:not(:disabled):active{box-shadow:inset 0 2px 8px rgba(18,24,53,.18)}
+.btn.bordered{margin-top:12px;padding:18px;font-size:17px;border:2px solid var(--bd)}
+.phead{padding-bottom:16px}
+.phead h2{font-size:clamp(28px,8vw,34px)}
+.phead .iconbtn{width:50px;height:50px;border-radius:17px;border:2px solid var(--bd)}
+.phead .iconbtn svg{width:22px;height:22px;stroke:currentColor;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.stats{grid-template-columns:1fr;margin-bottom:14px}
+.stat{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 22px;border-radius:20px;border:2px solid var(--bd)}
+.stat span{font-size:16px;font-weight:700;color:var(--ink)}
+.stat b{font-size:36px;line-height:1}
+.panel .search{margin-bottom:14px}
+.panel .search input{height:60px;font-size:17px;border-radius:18px;border:2px solid var(--bd)}
+.list{gap:12px}
+.oc{padding:18px 20px;border-radius:20px;border:2px solid var(--bd);content-visibility:auto;contain-intrinsic-size:auto 130px}
+.oc b{font-size:19px}
+.oc time{font-size:13.5px}
+.oc .m{display:flex;flex-direction:column;gap:1px;margin-top:10px;font-size:16.5px;line-height:1.35}
+.oc .m+.m{margin-top:8px}
+.oc .m .k{font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--mut)}
+.oc .m .v{font-weight:600;overflow-wrap:anywhere}
+.oc .n{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:14px}
+.tag{font-size:12px;padding:3px 10px}
+.pfoot{font-size:13px}
+@media(max-width:600px){.bg i{filter:blur(48px)}}
+@media(max-width:380px){.stat b{font-size:30px}.oc{padding:16px}.oc b{font-size:18px}}
 </style>
 </head>
 <body>
@@ -177,7 +213,7 @@ button:disabled{cursor:not-allowed}
     <h1>Mau makan apa hari ini?</h1>
     <p class="sub">Isi namamu, lalu pilih makanan dan minuman. Cuma satu menit.</p>
     <div class="field"><label for="nama">Nama kamu</label><input id="nama" maxlength="40" placeholder="Contoh: Ragash" autocomplete="given-name" enterkeyhint="next"></div>
-    <button class="linkbtn" id="open-list" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg>Lihat daftar pesanan</button>
+    <button class="listbtn" id="open-list" type="button"><span class="li"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg></span><span class="tx">Lihat daftar pesanan</span><span class="ch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></span></button>
   </section>
 
   <section class="step" data-s="1">
@@ -212,7 +248,7 @@ button:disabled{cursor:not-allowed}
     <h2 id="d-title"></h2>
     <p class="sub" id="d-sub"></p>
     <div class="recap" id="d-recap"></div>
-    <div class="ring"><button class="btn wa" id="again" type="button">Isi pesanan lain</button><button class="btn ghost" id="open-list2" type="button">Lihat daftar pesanan</button></div>
+    <div class="ring"><button class="btn wa" id="again" type="button">Isi pesanan lain</button><button class="btn ghost bordered" id="open-list2" type="button">Lihat daftar pesanan</button></div>
   </section>
 </div>
 
@@ -229,7 +265,6 @@ button:disabled{cursor:not-allowed}
   </div>
   <div class="stats">
     <div class="stat"><span>Pesanan masuk</span><b id="st-n">0</b></div>
-    <div class="stat"><span>Total nilai</span><b id="st-t">Rp0</b></div>
   </div>
   <div class="search"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q-orders" type="search" placeholder="Cari nama atau menu" aria-label="Cari pesanan" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search"><button class="clr" type="button" aria-label="Hapus pencarian" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="list" id="p-list" aria-live="polite"></div>
@@ -515,7 +550,6 @@ function renderOrders(o) {
   o = o || {};
   const all = L.orders || [], q = L.q.trim().toLowerCase();
   $("#st-n").textContent = all.length;
-  $("#st-t").textContent = rupiah(all.reduce((a, x) => a + (+x.total || 0), 0));
   const rows = q ? all.filter(x => [x.nama, x.makanan, x.minuman, x.catatan].join(" ").toLowerCase().includes(q)) : all;
   const keep = pList.scrollTop;
   if (!all.length) stateView("Belum ada pesanan masuk", "Pesanan yang berhasil dikirim akan tampil di sini.");
@@ -529,9 +563,9 @@ function renderOrders(o) {
       const who = el("b", "", x.nama || "-");
       if (me && String(x.nama).trim().toLowerCase() === me) who.appendChild(el("span", "tag", "Kamu"));
       const r1 = el("div", "r1"); r1.append(who, el("time", "", fmtWhen(x.t)));
-      c.append(r1, el("div", "m", (x.makanan || "-") + " + " + (x.minuman || "-")));
+      const mk = (k, v) => { const d = el("div", "m"); d.append(el("span", "k", k), el("span", "v", v || "-")); return d; };
+      c.append(r1, mk("Makanan", x.makanan), mk("Minuman", x.minuman));
       if (x.catatan) c.appendChild(el("div", "n", "Catatan: " + x.catatan));
-      c.appendChild(el("div", "t", rupiah(x.total)));
       pList.appendChild(c);
     });
   }
@@ -558,8 +592,7 @@ function normOrders(arr) {
       nama: String(g("nama", "Nama")),
       makanan: String(g("makanan", "Makanan")),
       minuman: String(g("minuman", "Minuman")),
-      catatan: String(g("catatan", "Catatan")),
-      total: toNum(g("total", "Total"))
+      catatan: String(g("catatan", "Catatan"))
     };
   }).sort((a, b) => b.t - a.t);
 }
@@ -596,7 +629,7 @@ async function loadOrders(silent) {
       } else throw e;
     }
     if (seq !== L.seq) return;
-    const sig = orders.length + ":" + (orders[0] ? orders[0].t : 0) + ":" + orders.reduce((a, x) => a + x.total, 0);
+    const sig = orders.length + ":" + (orders[0] ? orders[0].t : 0) + ":" + (orders[orders.length - 1] ? orders[orders.length - 1].t : 0);
     const changed = sig !== L.sig || !L.rendered;
     const first = !L.rendered;
     L.orders = orders; L.sig = sig; L.at = Date.now();

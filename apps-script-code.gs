@@ -12,7 +12,7 @@ var SHEET_NAME     = "Hasil Pemesanan";
 var TZ             = "Asia/Jakarta";
 var MAX_TOTAL      = 60000;         // batas per orang (rupiah)
 var MAX_LIST       = 1000;          // maksimum baris yang dikirim ke daftar
-var VERSION        = 3;
+var VERSION        = 4;
 
 var HEADERS = ["Waktu", "Nama", "Makanan", "Minuman", "Catatan", "Harga Makanan", "Harga Minuman", "Total", "ID"];
 
@@ -77,15 +77,13 @@ function doGet(e) {
         for (var i = rows.length - 1; i >= 0; i--) {        // terbaru di atas
           var r = rows[i];
           if (!String(r[1]).trim() && !String(r[2]).trim() && !String(r[3]).trim()) continue; // lewati baris kosong
-          var total = toInt_(r[7]);
-          if (!total) total = toInt_(r[5]) + toInt_(r[6]);
+          // harga sengaja TIDAK dikirim ke aplikasi; hanya terlihat di spreadsheet
           orders.push({
             t: toMs_(r[0]),
             nama: String(r[1]),
             makanan: String(r[2]),
             minuman: String(r[3]),
-            catatan: String(r[4]),
-            total: total
+            catatan: String(r[4])
           });
         }
       }
